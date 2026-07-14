@@ -1,34 +1,41 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { Separator } from "@/components/ui/separator"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
-type Frequency = "monthly" | "fortnightly" | "weekly"
+type Frequency = "monthly" | "fortnightly" | "weekly";
 
 const FREQ_LABELS: Record<Frequency, string> = {
   monthly: "Monthly",
   fortnightly: "Fortnightly",
   weekly: "Weekly",
-}
+};
 
 const PERIODS_PER_YEAR: Record<Frequency, number> = {
   monthly: 12,
   fortnightly: 26,
   weekly: 52,
-}
+};
 
 type AmortisationRow = {
-  year: number
-  payment: number
-  interest: number
-  principal: number
-  balance: number
-}
+  year: number;
+  payment: number;
+  interest: number;
+  principal: number;
+  balance: number;
+};
 
 function calculateMortgage(
   principal: number,
@@ -36,34 +43,35 @@ function calculateMortgage(
   years: number,
   frequency: Frequency,
 ) {
-  const periodsPerYear = PERIODS_PER_YEAR[frequency]
-  const totalPayments = years * periodsPerYear
-  const periodicRate = annualRate / 100 / periodsPerYear
+  const periodsPerYear = PERIODS_PER_YEAR[frequency];
+  const totalPayments = years * periodsPerYear;
+  const periodicRate = annualRate / 100 / periodsPerYear;
 
   if (periodicRate === 0) {
-    const payment = principal / totalPayments
-    return { payment, totalInterest: 0, totalPaid: principal, schedule: [] }
+    const payment = principal / totalPayments;
+    return { payment, totalInterest: 0, totalPaid: principal, schedule: [] };
   }
 
-  const compoundFactor = Math.pow(1 + periodicRate, totalPayments)
-  const payment = principal * (periodicRate * compoundFactor) / (compoundFactor - 1)
-  const totalPaid = payment * totalPayments
-  const totalInterest = totalPaid - principal
+  const compoundFactor = Math.pow(1 + periodicRate, totalPayments);
+  const payment =
+    (principal * (periodicRate * compoundFactor)) / (compoundFactor - 1);
+  const totalPaid = payment * totalPayments;
+  const totalInterest = totalPaid - principal;
 
-  let balance = principal
-  const schedule: AmortisationRow[] = []
+  let balance = principal;
+  const schedule: AmortisationRow[] = [];
 
   for (let year = 1; year <= years; year++) {
-    let yearlyInterest = 0
-    let yearlyPrincipal = 0
-    const paymentsThisYear = periodsPerYear
+    let yearlyInterest = 0;
+    let yearlyPrincipal = 0;
+    const paymentsThisYear = periodsPerYear;
 
     for (let p = 0; p < paymentsThisYear; p++) {
-      const interestPortion = balance * periodicRate
-      const principalPortion = payment - interestPortion
-      yearlyInterest += interestPortion
-      yearlyPrincipal += principalPortion
-      balance -= principalPortion
+      const interestPortion = balance * periodicRate;
+      const principalPortion = payment - interestPortion;
+      yearlyInterest += interestPortion;
+      yearlyPrincipal += principalPortion;
+      balance -= principalPortion;
     }
 
     schedule.push({
@@ -72,10 +80,10 @@ function calculateMortgage(
       interest: Math.round(yearlyInterest),
       principal: Math.round(yearlyPrincipal),
       balance: Math.round(Math.max(balance, 0)),
-    })
+    });
   }
 
-  return { payment, totalInterest, totalPaid, schedule }
+  return { payment, totalInterest, totalPaid, schedule };
 }
 
 function formatCurrency(value: number) {
@@ -83,7 +91,7 @@ function formatCurrency(value: number) {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
-  }).format(value)
+  }).format(value);
 }
 
 function formatCurrencyExact(value: number) {
@@ -92,33 +100,37 @@ function formatCurrencyExact(value: number) {
     currency: "USD",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(value)
+  }).format(value);
 }
 
 export function MortgageCalculator() {
-  const [principal, setPrincipal] = useState("500000")
-  const [rate, setRate] = useState("6")
-  const [years, setYears] = useState("30")
-  const [frequency, setFrequency] = useState<Frequency>("monthly")
+  const [principal, setPrincipal] = useState("500000");
+  const [rate, setRate] = useState("6");
+  const [years, setYears] = useState("30");
+  const [frequency, setFrequency] = useState<Frequency>("monthly");
   const [result, setResult] = useState<{
-    payment: number
-    totalInterest: number
-    totalPaid: number
-    schedule: AmortisationRow[]
-  } | null>(null)
+    payment: number;
+    totalInterest: number;
+    totalPaid: number;
+    schedule: AmortisationRow[];
+  } | null>(null);
 
   function handleCalculate() {
-    const p = parseFloat(principal)
-    const r = parseFloat(rate)
-    const y = parseFloat(years)
+    const p = parseFloat(principal);
+    const r = parseFloat(rate);
+    const y = parseFloat(years);
 
-    if (!p || !r || !y || p <= 0 || r <= 0 || y <= 0) return
+    if (!p || !r || !y || p <= 0 || r <= 0 || y <= 0) return;
 
-    setResult(calculateMortgage(p, r, y, frequency))
+    setResult(calculateMortgage(p, r, y, frequency));
   }
 
   return (
     <div className="mx-auto flex max-w-6xl flex-1 flex-col gap-8 px-6 py-12">
+      <header className="flex items-center justify-between">
+        <div />
+        <ThemeToggle />
+      </header>
       <div className="text-center">
         <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           Mortgage Repayments Calculator
@@ -182,12 +194,14 @@ export function MortgageCalculator() {
                   defaultValue={["monthly"]}
                   value={[frequency]}
                   onValueChange={(v) => {
-                    if (v.length > 0) setFrequency(v[0] as Frequency)
+                    if (v.length > 0) setFrequency(v[0] as Frequency);
                   }}
                   spacing={2}
                 >
                   <ToggleGroupItem value="monthly">Monthly</ToggleGroupItem>
-                  <ToggleGroupItem value="fortnightly">Fortnightly</ToggleGroupItem>
+                  <ToggleGroupItem value="fortnightly">
+                    Fortnightly
+                  </ToggleGroupItem>
                   <ToggleGroupItem value="weekly">Weekly</ToggleGroupItem>
                 </ToggleGroup>
               </Field>
@@ -256,16 +270,27 @@ export function MortgageCalculator() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border text-muted-foreground">
-                        <th className="py-2 pr-4 text-left font-medium">Year</th>
-                        <th className="py-2 pr-4 text-right font-medium">Payment</th>
-                        <th className="py-2 pr-4 text-right font-medium">Interest</th>
-                        <th className="py-2 pr-4 text-right font-medium">Principal</th>
+                        <th className="py-2 pr-4 text-left font-medium">
+                          Year
+                        </th>
+                        <th className="py-2 pr-4 text-right font-medium">
+                          Payment
+                        </th>
+                        <th className="py-2 pr-4 text-right font-medium">
+                          Interest
+                        </th>
+                        <th className="py-2 pr-4 text-right font-medium">
+                          Principal
+                        </th>
                         <th className="py-2 text-right font-medium">Balance</th>
                       </tr>
                     </thead>
                     <tbody>
                       {result.schedule.map((row) => (
-                        <tr key={row.year} className="border-b border-border/50 last:border-0">
+                        <tr
+                          key={row.year}
+                          className="border-b border-border/50 last:border-0"
+                        >
                           <td className="py-2 pr-4 text-left">{row.year}</td>
                           <td className="py-2 pr-4 text-right">
                             {formatCurrency(row.payment)}
@@ -290,5 +315,5 @@ export function MortgageCalculator() {
         )}
       </div>
     </div>
-  )
+  );
 }

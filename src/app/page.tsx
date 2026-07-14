@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Home() {
   return (
     <div className="flex flex-col flex-1">
+      <header className="flex items-center justify-end px-6 py-4">
+        <ThemeToggle />
+      </header>
       <section className="flex flex-col items-center justify-center gap-6 px-6 py-24 text-center md:py-32">
         <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
           Smart Financial{" "}
@@ -13,10 +17,19 @@ export default function Home() {
           easy-to-use calculators. Fast, accurate, and completely free.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button size="lg" nativeButton={false} render={<a href="#mortgage" />}>
+          <Button
+            size="lg"
+            nativeButton={false}
+            render={<a href="#mortgage" />}
+          >
             Mortgage Calculator
           </Button>
-          <Button size="lg" variant="outline" nativeButton={false} render={<a href="#compound" />}>
+          <Button
+            size="lg"
+            variant="outline"
+            nativeButton={false}
+            render={<a href="#compound" />}
+          >
             Compound Interest
           </Button>
         </div>
@@ -59,7 +72,12 @@ export default function Home() {
           No sign-up required. Our calculators are free to use and work on any
           device.
         </p>
-        <Button size="lg" className="mt-8" nativeButton={false} render={<a href="#mortgage" />}>
+        <Button
+          size="lg"
+          className="mt-8"
+          nativeButton={false}
+          render={<a href="#mortgage" />}
+        >
           Get Started
         </Button>
       </section>
@@ -99,7 +117,11 @@ function FeatureCard({
           </li>
         ))}
       </ul>
-      <Button className="mt-auto" nativeButton={false} render={<a href={href} />}>
+      <Button
+        className="mt-auto"
+        nativeButton={false}
+        render={<a href={href} />}
+      >
         {cta}
       </Button>
     </div>
