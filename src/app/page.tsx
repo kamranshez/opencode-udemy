@@ -33,7 +33,7 @@ export default function Home() {
               "Adjustable loan term and interest rate",
               "Clear amortisation schedule",
             ]}
-            href="/mortgage"
+            href="/mortgage-repayments-calculator"
             cta="Try Mortgage Calculator"
           />
           <FeatureCard
